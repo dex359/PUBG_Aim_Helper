@@ -1,26 +1,46 @@
 import time
-import subprocess
 
 import pynput
-import psutil
 
 import helpers
 import configuration as cfg
 
 
-class KeyPressListener:
+class KeyPressHandler:
 
     def __init__(self):
-        pass
+        self.mouse_listener = pynput.mouse.Listener(self.mouse_move, self.mouse_click, self.mouse_scroll)
+        self.keyboard_listener = pynput.keyboard.Listener(self.keyboard_press, self.keyboard_release)
+        self.mouse_listener.start()
+        self.keyboard_listener.start()
+
+    def mouse_move(self, x, y):
+        print(f"mouse move at: x:{x}, y:{y}")
+
+    def mouse_click(self, x, y, button, pressed):
+        print("{0} button {1} at x: {2}, y: {3}".format(button, "pressed" if pressed else "released", x, y))
+
+    def mouse_scroll(self, x, y, dx, dy):
+        print("Scrolled {0} at {1}".format("down" if dy < 0 else "up", (x, y)))
+
+    def keyboard_press(self, key):
+        try:
+            print('alphanumeric key {0} pressed'.format(
+                key.char))
+        except AttributeError:
+            print('special key {0} pressed'.format(key))
+
+    def keyboard_release(self, key):
+        print('{0} released'.format(key))
 
 
 class Server:
 
     def __init__(self):
-        pass
+        self.keypress_handler = KeyPressHandler()
 
     def loop_event(self):
-        pass
+        time.sleep(0.001)
 
 
 def run():
